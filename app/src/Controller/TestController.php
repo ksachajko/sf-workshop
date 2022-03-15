@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class TestController extends AbstractController
 {
-    #[Route('/test', name: 'app_test')]
+    #[Route('/test', name: 'test')]
     public function index(): Response
     {
         return new Response(
@@ -16,7 +16,7 @@ class TestController extends AbstractController
         );
     }
 
-    #[Route('/wildcard/{name}', name: 'app_test')]
+    #[Route('/hello/{name}', name: 'hello')]
     public function wildcard($name): Response
     {
         return new Response(
