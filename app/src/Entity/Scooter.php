@@ -4,6 +4,10 @@ namespace App\Entity;
 
 use App\Repository\ScooterRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Positive;
+use Symfony\Component\Validator\Constraints\Type;
 
 #[ORM\Entity(repositoryClass: ScooterRepository::class)]
 class Scooter
@@ -14,13 +18,38 @@ class Scooter
     private $id;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[NotBlank]
+    #[Length(min: 2)]
     private $name;
 
     #[ORM\Column(type: 'integer')]
+    #[NotBlank]
+    #[Positive]
     private $speed;
 
     #[ORM\Column(type: 'datetime')]
+    #[NotBlank]
+    #[Type('datetime')]
     private $productionDate;
+
+    #[ORM\Embedded(class: 'App\Entity\Coordinates', columnPrefix: false)]
+    private $coordinates;
+
+    /**
+     * @return mixed
+     */
+    public function getCoordinates()
+    {
+        return $this->coordinates;
+    }
+
+    /**
+     * @param mixed $coordinates
+     */
+    public function setCoordinates($coordinates): void
+    {
+        $this->coordinates = $coordinates;
+    }
 
     public function getId(): ?int
     {
