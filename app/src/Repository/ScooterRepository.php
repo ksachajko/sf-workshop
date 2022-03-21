@@ -45,6 +45,49 @@ class ScooterRepository extends ServiceEntityRepository
         }
     }
 
+    public function findFilteredBy($ids, $limit, $offset)
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->setMaxResults($limit);
+        $qb->setFirstResult($offset);
+
+        if ($ids) {
+            $idsArray = explode(',', $ids);
+
+            $qb->orWhere(
+                $qb->expr()->in('s.id', $idsArray)
+            );
+        }
+
+//        dd($qb->getQuery()->getSQL());
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findUsingDQL($id)
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery('
+            SELECT s
+            FROM APP\Entity\Scooter s
+            WHERE s.id = :id
+        ');
+
+        $query->setParameter('id', $id);
+
+        return $query->getResult();
+    }
+
+    public function veryCostlySQLQuery($id)
+    {
+        $connection = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT * FROM scooter s WHERE s.id = ?';
+        $stmt = $connection->prepare($sql);
+        $stmt->bindValue(1, $id);
+
+        return $stmt->executeQuery()->fetchAllAssociative();
+    }
     // /**
     //  * @return Scooter[] Returns an array of Scooter objects
     //  */
