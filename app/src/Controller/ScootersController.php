@@ -2,15 +2,17 @@
 
 namespace App\Controller;
 
+use App\Entity\Scooter;
 use App\Repository\ScooterRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ScootersController extends AbstractController
 {
-    #[Route('/scooters', name: 'app_scooters')]
+    #[Route('/scooters', name: 'app_scooters', methods: ['GET'])]
     public function all(Request $request, ScooterRepository $repository): Response
     {
         $limit = $request->query->get('limit', 2);
@@ -46,5 +48,15 @@ class ScootersController extends AbstractController
         $scooters = $repository->findFilteredBy($ids, $limit, $offset);
 
         return $this->json($scooters);
+    }
+
+    #[Route('/scooters', name: 'app_scooters_add', methods: ['POST'])]
+    public function add(Request $request, ScooterRepository $repository, SerializerInterface $serializer): Response
+    {
+        $scooter = $serializer->deserialize($request->getContent(), Scooter::class, 'json');
+
+        $repository->add($scooter);
+
+        return new Response(null, 201);
     }
 }
